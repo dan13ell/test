@@ -4,88 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Czech Republic PopCat Clicks</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/odometer.js/0.4.7/themes/odometer-theme-minimal.css" />
     <style>
-        /* Fixed Odometer CSS - No Glitching */
-        .odometer.odometer-auto-theme,
-        .odometer.odometer-theme-minimal {
-            display: inline-block;
-            vertical-align: middle;
-            position: relative;
-            font-family: 'Roboto', sans-serif;
-            line-height: 1.1em;
-        }
-        
-        .odometer.odometer-auto-theme .odometer-digit,
-        .odometer.odometer-theme-minimal .odometer-digit {
-            display: inline-block;
-            vertical-align: middle;
-            position: relative;
-            box-sizing: border-box;
-        }
-        
-        .odometer.odometer-auto-theme .odometer-digit .odometer-digit-spacer,
-        .odometer.odometer-theme-minimal .odometer-digit .odometer-digit-spacer {
-            display: inline-block;
-            vertical-align: middle;
-            visibility: hidden;
-        }
-        
-        .odometer.odometer-auto-theme .odometer-digit .odometer-digit-inner,
-        .odometer.odometer-theme-minimal .odometer-digit .odometer-digit-inner {
-            text-align: left;
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            overflow: hidden;
-        }
-        
-        .odometer.odometer-auto-theme .odometer-digit .odometer-ribbon,
-        .odometer.odometer-theme-minimal .odometer-digit .odometer-ribbon {
-            display: block;
-        }
-        
-        .odometer.odometer-auto-theme .odometer-digit .odometer-ribbon-inner,
-        .odometer.odometer-theme-minimal .odometer-digit .odometer-ribbon-inner {
-            display: block;
-            backface-visibility: hidden;
-        }
-        
-        .odometer.odometer-auto-theme .odometer-digit .odometer-value,
-        .odometer.odometer-theme-minimal .odometer-digit .odometer-value {
-            display: block;
-            transform: translateZ(0);
-        }
-        
-        .odometer.odometer-auto-theme .odometer-digit .odometer-value.odometer-last-value,
-        .odometer.odometer-theme-minimal .odometer-digit .odometer-value.odometer-last-value {
-            position: absolute;
-        }
-        
-        .odometer.odometer-auto-theme.odometer-animating-up .odometer-ribbon-inner,
-        .odometer.odometer-theme-minimal.odometer-animating-up .odometer-ribbon-inner {
-            transition: transform 1s;
-        }
-        
-        .odometer.odometer-auto-theme.odometer-animating-up.odometer-animating .odometer-ribbon-inner,
-        .odometer.odometer-theme-minimal.odometer-animating-up.odometer-animating .odometer-ribbon-inner {
-            transform: translateY(-100%);
-        }
-        
-        .odometer.odometer-auto-theme.odometer-animating-down .odometer-ribbon-inner,
-        .odometer.odometer-theme-minimal.odometer-animating-down .odometer-ribbon-inner {
-            transform: translateY(-100%);
-        }
-        
-        .odometer.odometer-auto-theme.odometer-animating-down.odometer-animating .odometer-ribbon-inner,
-        .odometer.odometer-theme-minimal.odometer-animating-down.odometer-animating .odometer-ribbon-inner {
-            transition: transform 1s;
-            transform: translateY(0);
-        }
-
-        /* Main Styles */
         :root {
             --primary: #1a1a1a;
             --secondary: #252525;
@@ -365,7 +285,7 @@
             white-space: nowrap;
             pointer-events: none;
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity 0.3s, transform 3s ease-out; /* Adjusted transition for smoother float */
             animation: float 4s infinite ease-in-out;
             z-index: 3;
             font-weight: bold;
@@ -391,33 +311,142 @@
             margin-top: 10px;
             text-align: center;
         }
-        
-        /* Odometer specific styles */
-        .odometer-value {
-            font-size: 42px;
-            color: var(--accent);
+
+        /* Odometer specific styling */
+        .odometer.odometer-auto-theme,
+        .odometer.odometer-theme-minimal {
+            display: inline-block;
+            vertical-align: middle;
+            /* *vertical-align: auto; */
+            /* *zoom: 1; */
+            /* *display: inline; */
+            position: relative;
+        }
+        .odometer.odometer-auto-theme .odometer-digit,
+        .odometer.odometer-theme-minimal .odometer-digit {
+            display: inline-block;
+            vertical-align: middle;
+            /* *vertical-align: auto; */
+            /* *zoom: 1; */
+            /* *display: inline; */
+            position: relative;
+        }
+        .odometer.odometer-auto-theme .odometer-digit .odometer-digit-spacer,
+        .odometer.odometer-theme-minimal .odometer-digit .odometer-digit-spacer {
+            display: inline-block;
+            vertical-align: middle;
+            /* *vertical-align: auto; */
+            /* *zoom: 1; */
+            /* *display: inline; */
+            visibility: hidden;
+        }
+        .odometer.odometer-auto-theme .odometer-digit .odometer-digit-inner,
+        .odometer.odometer-theme-minimal .odometer-digit .odometer-digit-inner {
+            text-align: left;
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+        }
+        .odometer.odometer-auto-theme .odometer-digit .odometer-ribbon,
+        .odometer.odometer-theme-minimal .odometer-digit .odometer-ribbon {
+            display: block;
+        }
+        .odometer.odometer-auto-theme .odometer-digit .odometer-ribbon-inner,
+        .odometer.odometer-theme-minimal .odometer-digit .odometer-ribbon-inner {
+            display: block;
+            -webkit-backface-visibility: hidden;
+        }
+        .odometer.odometer-auto-theme .odometer-digit .odometer-value,
+        .odometer.odometer-theme-minimal .odometer-digit .odometer-value {
+            display: block;
+            -webkit-transform: translateZ(0);
+        }
+        .odometer.odometer-auto-theme
+            .odometer-digit
+            .odometer-value.odometer-last-value,
+        .odometer.odometer-theme-minimal
+            .odometer-digit
+            .odometer-value.odometer-last-value {
+            position: absolute;
+        }
+        .odometer.odometer-auto-theme.odometer-animating-up .odometer-ribbon-inner,
+        .odometer.odometer-theme-minimal.odometer-animating-up .odometer-ribbon-inner {
+            -webkit-transition: -webkit-transform 2s;
+            -moz-transition: -moz-transform 2s;
+            -ms-transition: -ms-transform 2s;
+            -o-transition: -o-transform 2s;
+            transition: transform 2s;
+        }
+        .odometer.odometer-auto-theme.odometer-animating-up.odometer-animating
+            .odometer-ribbon-inner,
+        .odometer.odometer-theme-minimal.odometer-animating-up.odometer-animating
+            .odometer-ribbon-inner {
+            -webkit-transform: translateY(-100%);
+            -moz-transform: translateY(-100%);
+            -ms-transform: translateY(-100%);
+            -o-transform: translateY(-100%);
+            transform: translateY(-100%);
+        }
+        .odometer.odometer-auto-theme.odometer-animating-down .odometer-ribbon-inner,
+        .odometer.odometer-theme-minimal.odometer-animating-down
+            .odometer-ribbon-inner {
+            -webkit-transform: translateY(-100%);
+            -moz-transform: translateY(-100%);
+            -ms-transform: translateY(-100%);
+            -o-transform: translateY(-100%);
+            transform: translateY(-100%);
+        }
+        .odometer.odometer-auto-theme.odometer-animating-down.odometer-animating
+            .odometer-ribbon-inner,
+        .odometer.odometer-theme-minimal.odometer-animating-down.odometer-animating
+            .odometer-ribbon-inner {
+            -webkit-transition: -webkit-transform 2s;
+            -moz-transition: -moz-transform 2s;
+            -ms-transition: -ms-transform 2s;
+            -o-transition: -o-transform 2s;
+            transition: transform 2s;
+            -webkit-transform: translateY(0);
+            -moz-transform: translateY(0);
+            -ms-transform: translateY(0);
+            -o-transform: translateY(0);
+            transform: translateY(0);
+        }
+
+        .odometer.odometer-auto-theme,
+        .odometer.odometer-theme-default,
+        .odometer-formatting-mark,
+        .odometer-digit,
+        .odometer-inside {
+            line-height: 1.05em !important;
+            /*height: 1.05em !important;*/
+            margin: 0px;
+            padding: 0px;
+            vertical-align: middle;
+        }
+        .odometer.odometer-auto-theme .odometer-value,
+        .odometer.odometer-theme-default .odometer-value {
+            text-align: center;
+        }
+
+        /* Adjustments for Odometer in specific elements */
+        #click-count.odometer {
+            font-size: 42px; /* Ensure odometer matches big-number style */
             font-weight: 700;
-            min-height: 60px; /* Prevent layout shift */
-            line-height: 1.2;
+            color: var(--accent);
         }
-        
-        .odometer-small {
-            font-size: 24px;
-            min-height: 40px;
-        }
-        
-        .odometer-label {
-            font-size: 14px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 5px;
+        #clicks-to-pass.odometer,
+        #next-goal.odometer {
+            font-size: 24px; /* Ensure odometer matches stat-number style */
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
     <div class="dashboard">
-        <!-- Precision Loading Bar -->
         <div class="loading-bar-container">
             <div class="loading-bar" id="loading-bar"></div>
         </div>
@@ -428,14 +457,14 @@
         </div>
         
         <div class="main-stat" id="main-stat">
-            <div id="click-count" class="odometer-value odometer">0</div>
+            <div class="big-number odometer" id="click-count">0</div>
             <div class="stat-label">Total Clicks</div>
             <div id="error-message" class="error-message"></div>
         </div>
         
         <div class="stats-container">
             <div class="pass-container" id="pass-container">
-                <div id="clicks-to-pass" class="odometer-value odometer odometer-small">-</div>
+                <div class="stat-number odometer" id="clicks-to-pass">0</div>
                 <div class="stat-label">To Pass Next Country</div>
                 <div class="competitor-info" id="competitor-info"></div>
             </div>
@@ -452,7 +481,7 @@
             </div>
             
             <div class="goal-container">
-                <div id="next-goal" class="odometer-value odometer odometer-small">1,000,000</div>
+                <div class="stat-number odometer" id="next-goal">1000000</div>
                 <div class="stat-label">To Next Million</div>
             </div>
         </div>
@@ -479,34 +508,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Add Odometer JS -->
-    <script src="https://github.hubspot.com/odometer/odometer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/odometer.js/0.4.7/odometer.min.js"></script>
     <script>
-        // Initialize odometers
-        let clickOdometer = new Odometer({
-            el: document.querySelector('#click-count'),
-            value: 0,
-            format: '(,ddd)',
-            theme: 'minimal',
-            duration: 1000
-        });
-        
-        let passOdometer = new Odometer({
-            el: document.querySelector('#clicks-to-pass'),
-            value: 0,
-            format: '(,ddd)',
-            theme: 'minimal',
-            duration: 1000
-        });
-        
-        let goalOdometer = new Odometer({
-            el: document.querySelector('#next-goal'),
-            value: 1000000,
-            format: '(,ddd)',
-            theme: 'minimal',
-            duration: 1000
-        });
-        
         // Data tracking
         let lastCount = 0;
         let previousCount = 0;
@@ -515,19 +518,43 @@
         let historyChart = null;
         let countryRankings = [];
         let czPosition = 0;
-        let lastUpdateTime = null;
         
         // DOM elements
-        const currentRankEl = document.getElementById('current-rank');
+        const clickCountEl = document.getElementById('click-count');
         const clicks1sEl = document.getElementById('clicks-1s');
         const progressFillEl = document.getElementById('progress-fill');
         const progressPercentEl = document.getElementById('progress-percent');
         const mainStatEl = document.getElementById('main-stat');
+        const nextGoalEl = document.getElementById('next-goal');
+        const currentRankEl = document.getElementById('current-rank');
+        const clicksToPassEl = document.getElementById('clicks-to-pass');
         const competitorInfoEl = document.getElementById('competitor-info');
         const errorMessageEl = document.getElementById('error-message');
         const passContainerEl = document.getElementById('pass-container');
         const loadingBarEl = document.getElementById('loading-bar');
         
+        // Initialize Odometer instances
+        const odometerClickCount = new Odometer({
+            el: clickCountEl,
+            value: 0,
+            format: '(,ddd)', // Formats with commas
+            theme: 'minimal' // Use the minimal theme
+        });
+
+        const odometerClicksToPass = new Odometer({
+            el: clicksToPassEl,
+            value: 0,
+            format: '(,ddd)',
+            theme: 'minimal'
+        });
+
+        const odometerNextGoal = new Odometer({
+            el: nextGoalEl,
+            value: 1000000,
+            format: '(,ddd)',
+            theme: 'minimal'
+        });
+
         // Precision loading bar control
         let loadingBarTimeout;
         const LOADING_DURATION = 7000; // 7 seconds in ms
@@ -591,11 +618,70 @@
             bubble.className = 'previous-count';
             bubble.textContent = `+${formatNumber(count)}`;
             
-            bubble.style.left = '50%';
-            bubble.style.top = '20px';
-            bubble.style.transform = 'translateX(-50%)';
-            
             mainStatEl.appendChild(bubble);
+            
+            // Get dimensions of mainStatEl and current number elements
+            const mainStatRect = mainStatEl.getBoundingClientRect();
+            const clickCountRect = clickCountEl.getBoundingClientRect();
+            const statLabelRect = mainStatEl.querySelector('.stat-label').getBoundingClientRect(); // Get rect of "Total Clicks" label
+
+            const padding = 10; // Padding from the edges of mainStatEl
+
+            // Calculate safe areas for bubble placement
+            // Exclude top section (above clickCountEl) and bottom section (below statLabelRect)
+            // And avoid the width of the main odometer number itself.
+
+            // Define areas to avoid (relative to mainStatEl's top-left corner)
+            const avoidedAreas = [
+                { // The main odometer number
+                    left: clickCountRect.left - mainStatRect.left - padding,
+                    right: clickCountRect.right - mainStatRect.left + padding,
+                    top: clickCountRect.top - mainStatRect.top - padding,
+                    bottom: clickCountRect.bottom - mainStatRect.top + padding
+                },
+                { // The "Total Clicks" label
+                    left: statLabelRect.left - mainStatRect.left - padding,
+                    right: statLabelRect.right - mainStatRect.left + padding,
+                    top: statLabelRect.top - mainStatRect.top - padding,
+                    bottom: statLabelRect.bottom - mainStatRect.top + padding
+                }
+            ];
+
+            let randomLeft, randomTop;
+            let attempts = 0;
+            const maxAttempts = 50; // Prevent infinite loop
+
+            do {
+                // Generate random positions within the bounds of mainStatEl
+                // Subtracting bubble's estimated size (e.g., 80px width, 30px height) and padding
+                randomLeft = Math.random() * (mainStatRect.width - 100 - 2 * padding) + padding;
+                randomTop = Math.random() * (mainStatRect.height - 60 - 2 * padding) + padding;
+
+                // Check if the generated position overlaps with any avoided area
+                let overlaps = false;
+                for (const area of avoidedAreas) {
+                    // Simple AABB collision detection (Axis-Aligned Bounding Box)
+                    if (
+                        randomLeft < area.right &&
+                        randomLeft + 100 > area.left && // Assume bubble width of 100px
+                        randomTop < area.bottom &&
+                        randomTop + 60 > area.top    // Assume bubble height of 60px
+                    ) {
+                        overlaps = true;
+                        break;
+                    }
+                }
+                attempts++;
+                if (attempts > maxAttempts) {
+                    // Fallback to a default safe position if too many attempts fail
+                    randomLeft = (mainStatRect.width / 2) - 50;
+                    randomTop = mainStatRect.height * 0.7;
+                    break;
+                }
+            } while (overlaps);
+
+            bubble.style.left = `${randomLeft}px`;
+            bubble.style.top = `${randomTop}px`;
             
             setTimeout(() => {
                 bubble.classList.add('show-previous');
@@ -624,7 +710,7 @@
             }
         }
         
-        // Format numbers with commas
+        // Format numbers with commas (used for previous count bubble)
         function formatNumber(num) {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
@@ -643,7 +729,7 @@
             const nextGoal = 1000000 * (currentMillion + 1);
             const remaining = nextGoal - current;
             
-            goalOdometer.update(remaining);
+            odometerNextGoal.update(remaining); // Update with odometer
             
             const progress = (current % 1000000) / 1000000 * 100;
             progressFillEl.style.width = `${progress}%`;
@@ -666,7 +752,7 @@
                 if (czPosition > 0) {
                     const competitor = countryRankings[czPosition - 1];
                     const clicksNeeded = competitor.clicks - data.CZ + 1;
-                    passOdometer.update(clicksNeeded);
+                    odometerClicksToPass.update(clicksNeeded); // Update with odometer
                     
                     competitorInfoEl.innerHTML = `
                         <img src="https://flagcdn.com/24x18/${competitor.code.toLowerCase()}.png" class="small-flag" alt="${competitor.code}">
@@ -680,7 +766,8 @@
                         passContainerEl.style.backgroundColor = 'rgba(39, 174, 96, 0.1)';
                     }
                 } else {
-                    passOdometer.update(0);
+                    odometerClicksToPass.update(0); // If 1st, display 0 or similar
+                    clicksToPassEl.textContent = "1st"; // Manual override for "1st" text
                     competitorInfoEl.textContent = "You're #1!";
                     passContainerEl.style.backgroundColor = 'rgba(39, 174, 96, 0.3)';
                 }
@@ -780,7 +867,7 @@
                 lastCount = newCount;
                 lastUpdateTime = now;
                 
-                clickOdometer.update(newCount);
+                odometerClickCount.update(newCount); // Update with odometer
                 updateProgress(newCount);
                 updateChart(newCount);
                 
@@ -792,6 +879,7 @@
         }
         
         // Initialize
+        let lastUpdateTime = null;
         initChart();
         resetLoadingBar(); // Start the precision loading bar
         fetchCzechClicks(); // Initial data load
