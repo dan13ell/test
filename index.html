@@ -13,7 +13,7 @@
             --text: #e0e0e0;
             --text-secondary: #a0a0a0;
         }
-        
+
         body {
             font-family: Roboto, sans-serif;
             background-color: var(--primary);
@@ -24,7 +24,7 @@
             justify-content: center;
             min-height: 100vh;
         }
-        
+
         .dashboard {
             width: 100%;
             max-width: 500px;
@@ -35,7 +35,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         /* Precision Loading Bar */
         .loading-bar-container {
             position: absolute;
@@ -46,7 +46,7 @@
             background-color: rgba(255, 255, 255, 0.05);
             z-index: 10;
         }
-        
+
         .loading-bar {
             height: 100%;
             width: 100%;
@@ -54,27 +54,27 @@
             transform-origin: left center;
             transform: scaleX(0);
         }
-        
+
         .loading-bar-reset {
             animation: loadingReset 300ms ease-out forwards;
         }
-        
+
         @keyframes loadingProgress {
             0% { transform: scaleX(0); }
             100% { transform: scaleX(1); }
         }
-        
+
         @keyframes loadingReset {
-            0% { 
+            0% {
                 transform: scaleX(1);
                 opacity: 1;
             }
-            100% { 
+            100% {
                 transform: scaleX(1.2);
                 opacity: 0;
             }
         }
-        
+
         /* Tab effect */
         .dashboard::before {
             content: '';
@@ -87,7 +87,7 @@
             border-radius: 0 0 6px 6px;
             z-index: 9;
         }
-        
+
         .header {
             display: flex;
             align-items: center;
@@ -101,20 +101,20 @@
             border-radius: 4px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
-        
+
         .small-flag {
             height: 20px;
             margin-right: 8px;
             border-radius: 2px;
             vertical-align: middle;
         }
-        
+
         h1 {
             margin: 0;
             font-size: 24px;
             font-weight: 600;
         }
-        
+
         .main-stat {
             background-color: rgba(0, 0, 0, 0.2);
             border-radius: 10px;
@@ -130,7 +130,7 @@
             align-items: center;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
-        
+
         .big-number {
             font-size: 42px;
             font-weight: 700;
@@ -140,7 +140,7 @@
             position: relative;
             z-index: 2;
         }
-        
+
         .stat-label {
             font-size: 14px;
             color: var(--text-secondary);
@@ -149,14 +149,14 @@
             position: relative;
             z-index: 2;
         }
-        
+
         .stats-container {
             display: flex;
             flex-direction: column;
             gap: 15px;
             margin-bottom: 20px;
         }
-        
+
         .pass-container {
             background-color: rgba(39, 174, 96, 0.1);
             border: 1px solid var(--accent);
@@ -166,17 +166,17 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        
+
         .pass-container:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 15px rgba(39, 174, 96, 0.3);
         }
-        
+
         .row-container {
             display: flex;
             gap: 15px;
         }
-        
+
         .stat-card {
             flex: 1;
             background-color: rgba(0, 0, 0, 0.2);
@@ -186,12 +186,12 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        
+
         .stat-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
         }
-        
+
         .goal-container {
             background-color: rgba(0, 0, 0, 0.2);
             border-radius: 8px;
@@ -200,18 +200,18 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        
+
         .goal-container:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
         }
-        
+
         .stat-number {
             font-size: 24px;
             font-weight: 600;
             margin: 5px 0;
         }
-        
+
         .competitor-info {
             font-size: 14px;
             margin-top: 5px;
@@ -219,18 +219,18 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .progress-container {
             margin-top: 25px;
         }
-        
+
         .progress-label {
             display: flex;
             justify-content: space-between;
             margin-bottom: 8px;
             font-size: 14px;
         }
-        
+
         .progress-bar {
             height: 8px;
             background-color: rgba(255, 255, 255, 0.1);
@@ -238,26 +238,26 @@
             overflow: hidden;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
-        
+
         .progress-fill {
             height: 100%;
             background-color: var(--accent);
             width: 0%;
             transition: width 0.5s ease;
         }
-        
+
         .chart-container {
             margin-top: 30px;
             height: 200px;
             position: relative;
         }
-        
+
         .options {
             margin-top: 25px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             padding-top: 15px;
         }
-        
+
         .option-btn {
             background: none;
             border: none;
@@ -268,11 +268,11 @@
             padding: 5px 0;
             transition: color 0.2s ease;
         }
-        
+
         .option-btn:hover {
             color: var(--accent);
         }
-        
+
         .previous-count {
             position: absolute;
             font-size: 16px;
@@ -289,7 +289,7 @@
             font-weight: bold;
             text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
         }
-        
+
         @keyframes float {
             0%, 100% {
                 transform: translateY(0) rotate(0deg);
@@ -298,11 +298,11 @@
                 transform: translateY(-8px) rotate(3deg);
             }
         }
-        
+
         .show-previous {
             opacity: 1;
         }
-        
+
         .error-message {
             color: #ff6b6b;
             font-size: 14px;
@@ -438,25 +438,25 @@
         <div class="loading-bar-container">
             <div class="loading-bar" id="loading-bar"></div>
         </div>
-        
+
         <div class="header">
             <img src="https://flagcdn.com/192x144/cz.png" class="flag" alt="Czech Flag">
             <h1>Czech Republic PopCat Clicks</h1>
         </div>
-        
+
         <div class="main-stat" id="main-stat">
             <div class="big-number odometer" id="click-count">0</div>
             <div class="stat-label">Total Clicks</div>
             <div id="error-message" class="error-message"></div>
         </div>
-        
+
         <div class="stats-container">
             <div class="pass-container" id="pass-container">
                 <div class="stat-number odometer" id="clicks-to-pass">0</div>
                 <div class="stat-label">To Pass Next Country</div>
                 <div class="competitor-info" id="competitor-info"></div>
             </div>
-            
+
             <div class="row-container">
                 <div class="stat-card">
                     <div class="stat-number" id="current-rank">-</div>
@@ -467,13 +467,13 @@
                     <div class="stat-label">Clicks / Second</div>
                 </div>
             </div>
-            
+
             <div class="goal-container">
                 <div class="stat-number odometer" id="next-goal">1000000</div>
                 <div class="stat-label">To Next Million</div>
             </div>
         </div>
-        
+
         <div class="progress-container">
             <div class="progress-label">
                 <span>Progress to next million</span>
@@ -483,11 +483,11 @@
                 <div class="progress-fill" id="progress-fill"></div>
             </div>
         </div>
-        
+
         <div class="chart-container">
             <canvas id="historyChart"></canvas>
         </div>
-        
+
         <div class="options">
             <button class="option-btn">Change Country</button>
             <button class="option-btn">Visit PopCat</button>
@@ -506,7 +506,7 @@
         let historyChart = null;
         let countryRankings = [];
         let czPosition = 0;
-        
+
         // DOM elements
         const clickCountEl = document.getElementById('click-count');
         const clicks1sEl = document.getElementById('clicks-1s');
@@ -520,7 +520,7 @@
         const errorMessageEl = document.getElementById('error-message');
         const passContainerEl = document.getElementById('pass-container');
         const loadingBarEl = document.getElementById('loading-bar');
-        
+
         // Initialize Odometer instances
         const odometerClickCount = new Odometer({
             el: clickCountEl,
@@ -536,7 +536,7 @@
             theme: 'minimal'
         });
 
-        const odometerNextGoal = new Odometer({ // Fixed typo: changed Oometer to Odometer
+        const odometerNextGoal = new Odometer({
             el: nextGoalEl,
             value: 1000000,
             format: '(,ddd)',
@@ -544,10 +544,10 @@
         });
 
         // Precision loading bar control
-        let fetchIntervalId; // Changed from timeout to interval for consistent timing
+        let fetchIntervalId;
         // Interval nastaven na 10 sekund (10 000 ms)
-        const FETCH_INTERVAL = 10000; 
-        
+        const FETCH_INTERVAL = 10000;
+
         function startLoadingBarAnimation() {
             loadingBarEl.style.animation = 'none';
             loadingBarEl.classList.remove('loading-bar-reset');
@@ -560,7 +560,7 @@
             setTimeout(() => {
                 loadingBarEl.style.animation = 'none';
                 loadingBarEl.classList.remove('loading-bar-reset');
-                void loadingBarEl.offsetWidth; 
+                void loadingBarEl.offsetWidth;
             }, 300);
         }
 
@@ -586,7 +586,7 @@
                     maintainAspectRatio: false,
                     scales: {
                         x: { display: false },
-                        y: { 
+                        y: {
                             display: true,
                             grid: { color: 'rgba(255, 255, 255, 0.1)' }
                         }
@@ -597,31 +597,31 @@
                 }
             });
         }
-        
+
         // Create a floating previous count bubble
         function createPreviousCountBubble(count) {
             if (count === 0) return;
-            
+
             const bubble = document.createElement('div');
             bubble.className = 'previous-count';
             bubble.textContent = `+${formatNumber(count)}`;
-            
+
             mainStatEl.appendChild(bubble);
-            
+
             const mainStatRect = mainStatEl.getBoundingClientRect();
             const clickCountRect = clickCountEl.getBoundingClientRect();
-            const statLabelRect = mainStatEl.querySelector('.stat-label').getBoundingClientRect(); 
+            const statLabelRect = mainStatEl.querySelector('.stat-label').getBoundingClientRect();
 
-            const padding = 10; 
+            const padding = 10;
 
             const avoidedAreas = [
-                { 
+                {
                     left: clickCountRect.left - mainStatRect.left - padding,
                     right: clickCountRect.right - mainStatRect.left + padding,
                     top: clickCountRect.top - mainStatRect.top - padding,
                     bottom: clickCountRect.bottom - mainStatRect.top + padding
                 },
-                { 
+                {
                     left: statLabelRect.left - mainStatRect.left - padding,
                     right: statLabelRect.right - mainStatRect.left + padding,
                     top: statLabelRect.top - mainStatRect.top - padding,
@@ -631,24 +631,24 @@
 
             let randomLeft, randomTop;
             let attempts = 0;
-            const maxAttempts = 50; 
+            const maxAttempts = 50;
 
-            const bubbleWidth = 80; 
+            const bubbleWidth = 80;
             const bubbleHeight = 30;
 
-            let overlaps; 
+            let overlaps;
 
             do {
                 randomLeft = Math.random() * (mainStatRect.width - bubbleWidth - 2 * padding) + padding;
                 randomTop = Math.random() * (mainStatRect.height - bubbleHeight - 2 * padding) + padding;
 
-                overlaps = false; 
+                overlaps = false;
                 for (const area of avoidedAreas) {
                     if (
                         randomLeft < area.right &&
-                        randomLeft + bubbleWidth > area.left && 
+                        randomLeft + bubbleWidth > area.left &&
                         randomTop < area.bottom &&
-                        randomTop + bubbleHeight > area.top    
+                        randomTop + bubbleHeight > area.top
                     ) {
                         overlaps = true;
                         break;
@@ -656,6 +656,7 @@
                 }
                 attempts++;
                 if (attempts > maxAttempts) {
+                    // Fallback to a fixed position if unable to find a non-overlapping spot
                     randomLeft = mainStatRect.width - bubbleWidth - padding;
                     randomTop = mainStatRect.height - bubbleHeight - padding;
                     break;
@@ -664,11 +665,11 @@
 
             bubble.style.left = `${randomLeft}px`;
             bubble.style.top = `${randomTop}px`;
-            
+
             setTimeout(() => {
                 bubble.classList.add('show-previous');
             }, 50);
-            
+
             setTimeout(() => {
                 bubble.classList.remove('show-previous');
                 setTimeout(() => {
@@ -678,25 +679,25 @@
                 }, 300);
             }, 3000);
         }
-        
+
         // Update chart with new data
         function updateChart(newValue) {
             historyData.push(newValue);
             if (historyData.length > maxHistoryPoints) {
                 historyData.shift();
             }
-            
+
             if (historyChart) {
                 historyChart.data.datasets[0].data = historyData;
                 historyChart.update();
             }
         }
-        
+
         // Format numbers with commas (used for previous count bubble)
         function formatNumber(num) {
             return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
-        
+
         // Calculate and update averages
         function updateAverages(pointsGained, secondsPassed) {
             if (secondsPassed > 0) {
@@ -704,43 +705,43 @@
                 clicks1sEl.textContent = (Math.round(ratePerSecond * 10) / 10).toFixed(1);
             }
         }
-        
+
         // Update progress bar and next goal countdown
         function updateProgress(current) {
             const currentMillion = Math.floor(current / 1000000);
             const nextGoal = 1000000 * (currentMillion + 1);
             const remaining = nextGoal - current;
-            
+
             odometerNextGoal.update(remaining);
-            
+
             const progress = (current % 1000000) / 1000000 * 100;
             progressFillEl.style.width = `${progress}%`;
             progressPercentEl.textContent = `${Math.round(progress)}%`;
         }
-        
+
         // Update country ranking and competitor info
         function updateCountryRanking(data) {
             countryRankings = Object.keys(data).map(code => ({
                 code,
                 clicks: data[code]
             })).sort((a, b) => b.clicks - a.clicks);
-            
+
             czPosition = countryRankings.findIndex(c => c.code === 'CZ');
-            
+
             if (czPosition >= 0) {
                 const suffix = getNumberSuffix(czPosition + 1);
                 currentRankEl.textContent = `${czPosition + 1}${suffix}`;
-                
+
                 if (czPosition > 0) {
                     const competitor = countryRankings[czPosition - 1];
                     const clicksNeeded = competitor.clicks - data.CZ + 1;
                     odometerClicksToPass.update(clicksNeeded);
-                    
+
                     competitorInfoEl.innerHTML = `
                         <img src="https://flagcdn.com/24x18/${competitor.code.toLowerCase()}.png" class="small-flag" alt="${competitor.code}">
                         ${getCountryName(competitor.code)}
                     `;
-                    
+
                     if (clicksNeeded < 100000) {
                         passContainerEl.style.backgroundColor = 'rgba(39, 174, 96, 0.2)';
                         passContainerEl.style.border = '1px solid var(--accent)';
@@ -748,14 +749,14 @@
                         passContainerEl.style.backgroundColor = 'rgba(39, 174, 96, 0.1)';
                     }
                 } else {
-                    odometerClicksToPass.update(0); 
-                    clicksToPassEl.textContent = "1st"; 
+                    odometerClicksToPass.update(0);
+                    clicksToPassEl.textContent = "1st";
                     competitorInfoEl.textContent = "You're #1!";
                     passContainerEl.style.backgroundColor = 'rgba(39, 174, 96, 0.3)';
                 }
             }
         }
-        
+
         // Get country name from country code
         function getCountryName(code) {
             const countryNames = {
@@ -783,7 +784,7 @@
             };
             return countryNames[code] || code;
         }
-        
+
         // Get ordinal suffix for numbers
         function getNumberSuffix(num) {
             if (num >= 11 && num <= 13) return 'th';
@@ -794,35 +795,37 @@
                 default: return 'th';
             }
         }
-        
+
         // Show error message
         function showError(message) {
             errorMessageEl.textContent = message;
+            // Clear the error message after 5 seconds
             setTimeout(() => {
                 errorMessageEl.textContent = '';
             }, 5000);
         }
-        
+
         // Fetch data from API
         async function fetchCzechClicks() {
             startLoadingBarAnimation(); // Start animation at the beginning of fetch
             // Pouze proxy, přímý fetch se vždy zablokuje CORS
             const directApiUrl = 'https://leaderboard.popcat.click/';
-            const proxyUrl = 'https://corsproxy.io/?'; 
+            const proxyUrl = 'https://corsproxy.io/?';
 
             let data;
             let success = false;
 
             try {
                 let response = await fetch(proxyUrl + encodeURIComponent(directApiUrl));
-                
+
                 if (response.ok) {
                     try {
                         data = await response.json();
                         success = true;
                     } catch (jsonError) {
                         console.error('Proxy returned non-JSON or invalid JSON:', jsonError);
-                        throw new Error('Proxy returned invalid JSON.');
+                        showError('Proxy returned invalid JSON. Retrying...');
+                        return; // Stop execution if JSON parsing fails
                     }
                 } else {
                     throw new Error(`Proxy HTTP error! status: ${response.status}`);
@@ -831,50 +834,48 @@
             } catch (error) {
                 console.error('Error fetching data via proxy:', error);
                 showError(`Error updating data. Retrying...`);
-                // No need to restart interval here, it's handled by setInterval
-                return; 
+                return; // Stop execution if fetch fails
             }
 
             if (success) {
-                if (!data || typeof data.CZ === 'undefined') { 
+                if (!data || typeof data.CZ === 'undefined') {
                     showError('Invalid data format received from API. Retrying...');
                     console.error('Received data:', data);
-                    // No need to restart interval here, it's handled by setInterval
-                    return;
+                    return; // Stop execution if data format is invalid
                 }
-                
+
                 const newCount = data.CZ;
                 const now = new Date();
-                
+
                 updateCountryRanking(data);
-                
+
                 if (lastCount > 0 && newCount > lastCount) {
                     const timeDiff = (now - lastUpdateTime) / 1000;
                     const pointsGained = newCount - lastCount;
                     updateAverages(pointsGained, timeDiff);
-                    
+
                     if (pointsGained > 0) {
                         createPreviousCountBubble(pointsGained);
                     }
                 }
-                
+
                 previousCount = lastCount;
                 lastCount = newCount;
                 lastUpdateTime = now;
-                
-                odometerClickCount.update(newCount); 
+
+                odometerClickCount.update(newCount);
                 updateProgress(newCount);
                 updateChart(newCount);
 
-                resetLoadingBarVisual(); 
+                resetLoadingBarVisual();
             }
         }
-        
+
         // Initialize
         let lastUpdateTime = null;
         initChart();
         // Initial fetch
-        fetchCzechClicks(); 
+        fetchCzechClicks();
         // Set interval for subsequent fetches
         fetchIntervalId = setInterval(fetchCzechClicks, FETCH_INTERVAL);
     </script>
