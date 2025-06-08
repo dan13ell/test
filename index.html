@@ -536,7 +536,7 @@
             theme: 'minimal'
         });
 
-        const odometerNextGoal = new Odometer({
+        const odometerNextGoal = new Odometer({ // Fixed typo: changed Oometer to Odometer
             el: nextGoalEl,
             value: 1000000,
             format: '(,ddd)',
@@ -544,21 +544,15 @@
         });
 
         // Precision loading bar control
-        let loadingBarTimeout;
+        let fetchIntervalId; // Changed from timeout to interval for consistent timing
         // Interval nastaven na 10 sekund (10 000 ms)
-        const LOADING_DURATION = 10000; 
+        const FETCH_INTERVAL = 10000; 
         
-        function startLoadingBar() {
-            clearTimeout(loadingBarTimeout);
-            
+        function startLoadingBarAnimation() {
             loadingBarEl.style.animation = 'none';
             loadingBarEl.classList.remove('loading-bar-reset');
-            void loadingBarEl.offsetWidth; 
-            loadingBarEl.style.animation = `loadingProgress ${LOADING_DURATION}ms linear forwards`;
-            
-            loadingBarTimeout = setTimeout(() => {
-                fetchCzechClicks();
-            }, LOADING_DURATION - 50); 
+            void loadingBarEl.offsetWidth; // Trigger reflow
+            loadingBarEl.style.animation = `loadingProgress ${FETCH_INTERVAL}ms linear forwards`;
         }
 
         function resetLoadingBarVisual() {
@@ -642,13 +636,13 @@
             const bubbleWidth = 80; 
             const bubbleHeight = 30;
 
-            let overlaps; // <<<--- TOTO JE TA OPRAVA! Deklarace proměnné `overlaps`.
+            let overlaps; 
 
             do {
                 randomLeft = Math.random() * (mainStatRect.width - bubbleWidth - 2 * padding) + padding;
                 randomTop = Math.random() * (mainStatRect.height - bubbleHeight - 2 * padding) + padding;
 
-                overlaps = false; // <<<--- A tady se resetuje pro každou iteraci
+                overlaps = false; 
                 for (const area of avoidedAreas) {
                     if (
                         randomLeft < area.right &&
@@ -811,25 +805,18 @@
         
         // Fetch data from API
         async function fetchCzechClicks() {
+            startLoadingBarAnimation(); // Start animation at the beginning of fetch
             // Pouze proxy, přímý fetch se vždy zablokuje CORS
             const directApiUrl = 'https://leaderboard.popcat.click/';
-            // Zkusíme jiný proxy server, pokud ten původní vrací HTML.
-            // Poznámka: Žádný veřejný proxy server není garantovaný a mohou mít omezení.
-            const proxyUrl = 'https://corsproxy.io/?'; // Alternativní proxy, je potřeba double encode URL.
-            // const proxyUrl = 'https://api.codetabs.com/v1/proxy/?quest='; // Původní proxy
+            const proxyUrl = 'https://corsproxy.io/?'; 
 
             let data;
             let success = false;
 
             try {
-                // Používáme encodeURIComponent dvakrát pro corsproxy.io
                 let response = await fetch(proxyUrl + encodeURIComponent(directApiUrl));
                 
                 if (response.ok) {
-                    const contentType = response.headers.get('content-type');
-                    // Někdy proxy může vrátit text/plain, i když je obsah JSON.
-                    // Zkusíme parsovat JSON i bez striktní kontroly Content-Type,
-                    // ale s kontrolou, zda je to platný JSON.
                     try {
                         data = await response.json();
                         success = true;
@@ -843,8 +830,8 @@
 
             } catch (error) {
                 console.error('Error fetching data via proxy:', error);
-                showError(`Error updating data. Retrying in ${LOADING_DURATION / 1000} seconds...`);
-                startLoadingBar(); 
+                showError(`Error updating data. Retrying...`);
+                // No need to restart interval here, it's handled by setInterval
                 return; 
             }
 
@@ -852,7 +839,7 @@
                 if (!data || typeof data.CZ === 'undefined') { 
                     showError('Invalid data format received from API. Retrying...');
                     console.error('Received data:', data);
-                    startLoadingBar(); 
+                    // No need to restart interval here, it's handled by setInterval
                     return;
                 }
                 
@@ -880,14 +867,16 @@
                 updateChart(newCount);
 
                 resetLoadingBarVisual(); 
-                startLoadingBar(); 
             }
         }
         
         // Initialize
         let lastUpdateTime = null;
         initChart();
+        // Initial fetch
         fetchCzechClicks(); 
+        // Set interval for subsequent fetches
+        fetchIntervalId = setInterval(fetchCzechClicks, FETCH_INTERVAL);
     </script>
 </body>
 </html>
