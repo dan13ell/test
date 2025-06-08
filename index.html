@@ -1,49 +1,92 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8">
-  <title>Live POPCAT CZ vs SK</title>
-  <style>/* tmavý styl stejný jako dříve */</style>
+  <meta charset="utf‑8">
+  <meta name="viewport" content="width=device‑width,initial‑scale=1">
+  <title>Popcat Live: Česko & Slovensko</title>
+  <style>
+    /* --- Reset + base --- */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#121212; color:#e0e0e0; font‑family:Arial, sans‑serif; display:flex; flex‑direction:column; align‑items:center; padding:20px; }
+    h1 { margin‑bottom:20px; }
+    .card { background:#1e1e1e; border‑radius:10px; padding:20px; width:100%; max‑width:500px; margin:10px; box‑shadow:0 4px 10px rgba(0,0,0,0.5); transition:transform 0.3s; }
+    .card:hover { transform:translateY(-5px); }
+    .stat { display:flex; justify‑content:space‑between; margin:10px 0; }
+    .label { font‑size:1.1em; }
+    .value { font‑size:1.3em; font‑weight:bold; }
+    .cpsBar { height:8px; border‑radius:4px; background:#333; overflow:hidden; margin:5px 0; }
+    .cpsFill { height:100%; background:#76ff03; width:0; transition:width 1s ease‑out; }
+    @media (max‑width:600px) {
+      .card { padding:15px; }
+      .value { font‑size:1.1em; }
+    }
+  </style>
 </head>
 <body>
-  <div id="app">Načítám…</div>
+  <h1>Popcat Live – 🇨🇿 Česko & 🇸🇰 Slovensko</h1>
+  <div id="cards"></div>
 
   <script>
-    const app = document.getElementById('app');
-    let last = { cz: 0, sk: 0, time: Date.now() };
-
-    async function updateUI() {
-      try {
-        const res = await fetch('/data');
-        const json = await res.json();
-
-        const cz = json.find(e => e.name === 'Czech Republic');
-        const sk = json.find(e => e.name === 'Slovakia');
-        const sorted = [...json].sort((a,b) => b.clicks - a.clicks);
-
-        // výpočty
-        const now = Date.now();
-        const dt = (now - last.time)/1000;
-        const cz_cps = ((cz.clicks - last.cz)/dt).toFixed(1);
-        const sk_cps = ((sk.clicks - last.sk)/dt).toFixed(1);
-
-        last = { cz: cz.clicks, sk: sk.clicks, time: now };
-
-        const czNext = sorted[sorted.findIndex(e=>e.name=='Czech Republic') - 1] || {};
-        const skNext = sorted[sorted.findIndex(e=>e.name=='Slovakia') - 1] || {};
-
-        app.innerHTML = `
-          <h1>🇨🇿 CZ vs 🇸🇰 SK</h1>
-          <p>CZ: ${cz.clicks} clicks, CPS: ${cz_cps}, na další: ${(czNext.clicks - cz.clicks) || 0}</p>
-          <p>SK: ${sk.clicks} clicks, CPS: ${sk_cps}, na další: ${(skNext.clicks - sk.clicks) || 0}</p>
-        `;
-      } catch(e) {
-        app.textContent = 'Chyba: ' + e.message;
+  async function fetchLeaderboard() {
+    const resp = await fetch('https://leaderboard.popcat.click/');
+    const txt = await resp.text();
+    const dom = new DOMParser().parseFromString(txt, 'text/html');
+    const rows = Array.from(dom.querySelectorAll('tr'));
+    const data = rows.map(r => {
+      const tds = r.querySelectorAll('td');
+      if (tds.length >= 3) {
+        return {
+          rank: Number(tds[0].textContent.trim().replace('.', '')) || null,
+          country: tds[1].textContent.trim(),
+          clicks: Number(tds[2].textContent.trim().replace(/[,.]/g,'')),
+          cps: Number((tds[3]?.textContent || '').trim().replace(/[,.]/g,'')) || null
+        };
       }
-    }
+    }).filter(x => x && (x.country === 'Czechia' || x.country === 'Slovakia'));
+    return data;
+  }
 
-    updateUI();
-    setInterval(updateUI, 5000);
+  function updateUI(data) {
+    const cards = document.getElementById('cards');
+    cards.innerHTML = '';
+    data.forEach(d => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      const countryName = d.country === 'Czechia' ? 'Česko' : 'Slovensko';
+      card.innerHTML = `
+        <div class="stat"><span class="label">${countryName}</span><span class="value">${d.clicks.toLocaleString()}</span></div>
+        <div class="stat"><span class="label">CPS</span><span class="value">${d.cps?.toLocaleString()||'–'}</span></div>
+        <div class="cpsBar"><div class="cpsFill" style="width: ${d.cps?Math.min(d.cps/50000*100,100):0}%"></div></div>
+        <div class="stat"><span class="label">Na přeskočení další:</span><span class="value" id="need-${d.country}">…</span></div>
+      `;
+      cards.append(card);
+    });
+
+    // spočítat rozdíly
+    if (data.length === 2) {
+      const [cz, sk] = data[0].country==='Czechia'? data : data.reverse();
+      const sorted = [...data].sort((a,b)=>b.clicks - a.clicks);
+      sorted.forEach(d => {
+        const next = sorted.find(n=>n.clicks> d.clicks);
+        const diff = next ? next.clicks - d.clicks + 1 : 0;
+        const elem = document.getElementById(`need-${d.country}`);
+        elem.textContent = diff > 0 ? diff.toLocaleString() : 'v čele';
+      });
+    }
+  }
+
+  async function refresh() {
+    try {
+      const data = await fetchLeaderboard();
+      updateUI(data);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // prvotní načtení + perioda každých 10 s
+  refresh();
+  setInterval(refresh, 10000);
   </script>
 </body>
 </html>
