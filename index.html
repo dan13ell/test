@@ -1,92 +1,800 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html lang="en">
 <head>
-  <meta charset="utf‑8">
-  <meta name="viewport" content="width=device‑width,initial‑scale=1">
-  <title>Popcat Live: Česko & Slovensko</title>
-  <style>
-    /* --- Reset + base --- */
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { background:#121212; color:#e0e0e0; font‑family:Arial, sans‑serif; display:flex; flex‑direction:column; align‑items:center; padding:20px; }
-    h1 { margin‑bottom:20px; }
-    .card { background:#1e1e1e; border‑radius:10px; padding:20px; width:100%; max‑width:500px; margin:10px; box‑shadow:0 4px 10px rgba(0,0,0,0.5); transition:transform 0.3s; }
-    .card:hover { transform:translateY(-5px); }
-    .stat { display:flex; justify‑content:space‑between; margin:10px 0; }
-    .label { font‑size:1.1em; }
-    .value { font‑size:1.3em; font‑weight:bold; }
-    .cpsBar { height:8px; border‑radius:4px; background:#333; overflow:hidden; margin:5px 0; }
-    .cpsFill { height:100%; background:#76ff03; width:0; transition:width 1s ease‑out; }
-    @media (max‑width:600px) {
-      .card { padding:15px; }
-      .value { font‑size:1.1em; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Czech Republic PopCat Clicks</title>
+    <style>
+        /* Fixed Odometer CSS - No Glitching */
+        .odometer.odometer-auto-theme,
+        .odometer.odometer-theme-minimal {
+            display: inline-block;
+            vertical-align: middle;
+            position: relative;
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.1em;
+        }
+        
+        .odometer.odometer-auto-theme .odometer-digit,
+        .odometer.odometer-theme-minimal .odometer-digit {
+            display: inline-block;
+            vertical-align: middle;
+            position: relative;
+            box-sizing: border-box;
+        }
+        
+        .odometer.odometer-auto-theme .odometer-digit .odometer-digit-spacer,
+        .odometer.odometer-theme-minimal .odometer-digit .odometer-digit-spacer {
+            display: inline-block;
+            vertical-align: middle;
+            visibility: hidden;
+        }
+        
+        .odometer.odometer-auto-theme .odometer-digit .odometer-digit-inner,
+        .odometer.odometer-theme-minimal .odometer-digit .odometer-digit-inner {
+            text-align: left;
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+        }
+        
+        .odometer.odometer-auto-theme .odometer-digit .odometer-ribbon,
+        .odometer.odometer-theme-minimal .odometer-digit .odometer-ribbon {
+            display: block;
+        }
+        
+        .odometer.odometer-auto-theme .odometer-digit .odometer-ribbon-inner,
+        .odometer.odometer-theme-minimal .odometer-digit .odometer-ribbon-inner {
+            display: block;
+            backface-visibility: hidden;
+        }
+        
+        .odometer.odometer-auto-theme .odometer-digit .odometer-value,
+        .odometer.odometer-theme-minimal .odometer-digit .odometer-value {
+            display: block;
+            transform: translateZ(0);
+        }
+        
+        .odometer.odometer-auto-theme .odometer-digit .odometer-value.odometer-last-value,
+        .odometer.odometer-theme-minimal .odometer-digit .odometer-value.odometer-last-value {
+            position: absolute;
+        }
+        
+        .odometer.odometer-auto-theme.odometer-animating-up .odometer-ribbon-inner,
+        .odometer.odometer-theme-minimal.odometer-animating-up .odometer-ribbon-inner {
+            transition: transform 1s;
+        }
+        
+        .odometer.odometer-auto-theme.odometer-animating-up.odometer-animating .odometer-ribbon-inner,
+        .odometer.odometer-theme-minimal.odometer-animating-up.odometer-animating .odometer-ribbon-inner {
+            transform: translateY(-100%);
+        }
+        
+        .odometer.odometer-auto-theme.odometer-animating-down .odometer-ribbon-inner,
+        .odometer.odometer-theme-minimal.odometer-animating-down .odometer-ribbon-inner {
+            transform: translateY(-100%);
+        }
+        
+        .odometer.odometer-auto-theme.odometer-animating-down.odometer-animating .odometer-ribbon-inner,
+        .odometer.odometer-theme-minimal.odometer-animating-down.odometer-animating .odometer-ribbon-inner {
+            transition: transform 1s;
+            transform: translateY(0);
+        }
+
+        /* Main Styles */
+        :root {
+            --primary: #1a1a1a;
+            --secondary: #252525;
+            --accent: #27ae60;
+            --text: #e0e0e0;
+            --text-secondary: #a0a0a0;
+        }
+        
+        body {
+            font-family: Roboto, sans-serif;
+            background-color: var(--primary);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        
+        .dashboard {
+            width: 100%;
+            max-width: 500px;
+            background-color: var(--secondary);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Precision Loading Bar */
+        .loading-bar-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: rgba(255, 255, 255, 0.05);
+            z-index: 10;
+        }
+        
+        .loading-bar {
+            height: 100%;
+            width: 100%;
+            background-color: var(--accent);
+            transform-origin: left center;
+            transform: scaleX(0);
+            border-radius: 0 2px 2px 0;
+            animation: loadingProgress 7000ms linear forwards;
+        }
+        
+        .loading-bar-reset {
+            animation: loadingReset 300ms ease-out forwards;
+        }
+        
+        @keyframes loadingProgress {
+            0% { transform: scaleX(0); }
+            100% { transform: scaleX(1); }
+        }
+        
+        @keyframes loadingReset {
+            0% { 
+                transform: scaleX(1);
+                opacity: 1;
+            }
+            100% { 
+                transform: scaleX(1.2);
+                opacity: 0;
+            }
+        }
+        
+        /* Tab effect */
+        .dashboard::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background-color: var(--secondary);
+            border-radius: 0 0 6px 6px;
+            z-index: 9;
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            margin-top: 9px;
+        }
+
+        .flag {
+            height: 40px;
+            margin-right: 15px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .small-flag {
+            height: 20px;
+            margin-right: 8px;
+            border-radius: 2px;
+            vertical-align: middle;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .main-stat {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            text-align: center;
+            position: relative;
+            min-height: 120px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .big-number {
+            font-size: 42px;
+            font-weight: 700;
+            margin: 10px 0;
+            color: var(--accent);
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .stats-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .pass-container {
+            background-color: rgba(39, 174, 96, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .pass-container:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(39, 174, 96, 0.3);
+        }
+        
+        .row-container {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .stat-card {
+            flex: 1;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .goal-container {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .goal-container:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 5px 0;
+        }
+        
+        .competitor-info {
+            font-size: 14px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .progress-container {
+            margin-top: 25px;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--accent);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .chart-container {
+            margin-top: 30px;
+            height: 200px;
+            position: relative;
+        }
+        
+        .options {
+            margin-top: 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 15px;
+        }
+        
+        .option-btn {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 14px;
+            margin-right: 15px;
+            cursor: pointer;
+            padding: 5px 0;
+            transition: color 0.2s ease;
+        }
+        
+        .option-btn:hover {
+            color: var(--accent);
+        }
+        
+        .previous-count {
+            position: absolute;
+            font-size: 16px;
+            color: var(--accent);
+            background-color: rgba(39, 174, 96, 0.2);
+            padding: 5px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            animation: float 4s infinite ease-in-out;
+            z-index: 3;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-8px) rotate(3deg);
+            }
+        }
+        
+        .show-previous {
+            opacity: 1;
+        }
+        
+        .error-message {
+            color: #ff6b6b;
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        /* Odometer specific styles */
+        .odometer-value {
+            font-size: 42px;
+            color: var(--accent);
+            font-weight: 700;
+            min-height: 60px; /* Prevent layout shift */
+            line-height: 1.2;
+        }
+        
+        .odometer-small {
+            font-size: 24px;
+            min-height: 40px;
+        }
+        
+        .odometer-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+    </style>
 </head>
 <body>
-  <h1>Popcat Live – 🇨🇿 Česko & 🇸🇰 Slovensko</h1>
-  <div id="cards"></div>
+    <div class="dashboard">
+        <!-- Precision Loading Bar -->
+        <div class="loading-bar-container">
+            <div class="loading-bar" id="loading-bar"></div>
+        </div>
+        
+        <div class="header">
+            <img src="https://flagcdn.com/192x144/cz.png" class="flag" alt="Czech Flag">
+            <h1>Czech Republic PopCat Clicks</h1>
+        </div>
+        
+        <div class="main-stat" id="main-stat">
+            <div id="click-count" class="odometer-value odometer">0</div>
+            <div class="stat-label">Total Clicks</div>
+            <div id="error-message" class="error-message"></div>
+        </div>
+        
+        <div class="stats-container">
+            <div class="pass-container" id="pass-container">
+                <div id="clicks-to-pass" class="odometer-value odometer odometer-small">-</div>
+                <div class="stat-label">To Pass Next Country</div>
+                <div class="competitor-info" id="competitor-info"></div>
+            </div>
+            
+            <div class="row-container">
+                <div class="stat-card">
+                    <div class="stat-number" id="current-rank">-</div>
+                    <div class="stat-label">Current Rank</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="clicks-1s">0</div>
+                    <div class="stat-label">Clicks / Second</div>
+                </div>
+            </div>
+            
+            <div class="goal-container">
+                <div id="next-goal" class="odometer-value odometer odometer-small">1,000,000</div>
+                <div class="stat-label">To Next Million</div>
+            </div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-label">
+                <span>Progress to next million</span>
+                <span id="progress-percent">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <canvas id="historyChart"></canvas>
+        </div>
+        
+        <div class="options">
+            <button class="option-btn">Change Country</button>
+            <button class="option-btn">Visit PopCat</button>
+            <button class="option-btn">Compare</button>
+        </div>
+    </div>
 
-  <script>
-  async function fetchLeaderboard() {
-    const resp = await fetch('https://leaderboard.popcat.click/');
-    const txt = await resp.text();
-    const dom = new DOMParser().parseFromString(txt, 'text/html');
-    const rows = Array.from(dom.querySelectorAll('tr'));
-    const data = rows.map(r => {
-      const tds = r.querySelectorAll('td');
-      if (tds.length >= 3) {
-        return {
-          rank: Number(tds[0].textContent.trim().replace('.', '')) || null,
-          country: tds[1].textContent.trim(),
-          clicks: Number(tds[2].textContent.trim().replace(/[,.]/g,'')),
-          cps: Number((tds[3]?.textContent || '').trim().replace(/[,.]/g,'')) || null
-        };
-      }
-    }).filter(x => x && (x.country === 'Czechia' || x.country === 'Slovakia'));
-    return data;
-  }
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add Odometer JS -->
+    <script src="https://github.hubspot.com/odometer/odometer.js"></script>
+    <script>
+        // Initialize odometers
+        let clickOdometer = new Odometer({
+            el: document.querySelector('#click-count'),
+            value: 0,
+            format: '(,ddd)',
+            theme: 'minimal',
+            duration: 1000
+        });
+        
+        let passOdometer = new Odometer({
+            el: document.querySelector('#clicks-to-pass'),
+            value: 0,
+            format: '(,ddd)',
+            theme: 'minimal',
+            duration: 1000
+        });
+        
+        let goalOdometer = new Odometer({
+            el: document.querySelector('#next-goal'),
+            value: 1000000,
+            format: '(,ddd)',
+            theme: 'minimal',
+            duration: 1000
+        });
+        
+        // Data tracking
+        let lastCount = 0;
+        let previousCount = 0;
+        let historyData = [];
+        const maxHistoryPoints = 30;
+        let historyChart = null;
+        let countryRankings = [];
+        let czPosition = 0;
+        let lastUpdateTime = null;
+        
+        // DOM elements
+        const currentRankEl = document.getElementById('current-rank');
+        const clicks1sEl = document.getElementById('clicks-1s');
+        const progressFillEl = document.getElementById('progress-fill');
+        const progressPercentEl = document.getElementById('progress-percent');
+        const mainStatEl = document.getElementById('main-stat');
+        const competitorInfoEl = document.getElementById('competitor-info');
+        const errorMessageEl = document.getElementById('error-message');
+        const passContainerEl = document.getElementById('pass-container');
+        const loadingBarEl = document.getElementById('loading-bar');
+        
+        // Precision loading bar control
+        let loadingBarTimeout;
+        const LOADING_DURATION = 7000; // 7 seconds in ms
+        
+        function resetLoadingBar() {
+            clearTimeout(loadingBarTimeout);
+            
+            loadingBarEl.classList.add('loading-bar-reset');
+            
+            setTimeout(() => {
+                loadingBarEl.style.animation = 'none';
+                loadingBarEl.classList.remove('loading-bar-reset');
+                void loadingBarEl.offsetWidth;
+                loadingBarEl.style.animation = `loadingProgress ${LOADING_DURATION}ms linear forwards`;
+                
+                loadingBarTimeout = setTimeout(() => {
+                    fetchCzechClicks();
+                }, LOADING_DURATION - 50);
+            }, 300);
+        }
 
-  function updateUI(data) {
-    const cards = document.getElementById('cards');
-    cards.innerHTML = '';
-    data.forEach(d => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      const countryName = d.country === 'Czechia' ? 'Česko' : 'Slovensko';
-      card.innerHTML = `
-        <div class="stat"><span class="label">${countryName}</span><span class="value">${d.clicks.toLocaleString()}</span></div>
-        <div class="stat"><span class="label">CPS</span><span class="value">${d.cps?.toLocaleString()||'–'}</span></div>
-        <div class="cpsBar"><div class="cpsFill" style="width: ${d.cps?Math.min(d.cps/50000*100,100):0}%"></div></div>
-        <div class="stat"><span class="label">Na přeskočení další:</span><span class="value" id="need-${d.country}">…</span></div>
-      `;
-      cards.append(card);
-    });
-
-    // spočítat rozdíly
-    if (data.length === 2) {
-      const [cz, sk] = data[0].country==='Czechia'? data : data.reverse();
-      const sorted = [...data].sort((a,b)=>b.clicks - a.clicks);
-      sorted.forEach(d => {
-        const next = sorted.find(n=>n.clicks> d.clicks);
-        const diff = next ? next.clicks - d.clicks + 1 : 0;
-        const elem = document.getElementById(`need-${d.country}`);
-        elem.textContent = diff > 0 ? diff.toLocaleString() : 'v čele';
-      });
-    }
-  }
-
-  async function refresh() {
-    try {
-      const data = await fetchLeaderboard();
-      updateUI(data);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  // prvotní načtení + perioda každých 10 s
-  refresh();
-  setInterval(refresh, 10000);
-  </script>
+        // Initialize chart
+        const ctx = document.getElementById('historyChart').getContext('2d');
+        function initChart() {
+            historyChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array(maxHistoryPoints).fill(''),
+                    datasets: [{
+                        data: historyData,
+                        borderColor: '#27ae60',
+                        backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { display: false },
+                        y: { 
+                            display: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+        
+        // Create a floating previous count bubble
+        function createPreviousCountBubble(count) {
+            if (count === 0) return;
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'previous-count';
+            bubble.textContent = `+${formatNumber(count)}`;
+            
+            bubble.style.left = '50%';
+            bubble.style.top = '20px';
+            bubble.style.transform = 'translateX(-50%)';
+            
+            mainStatEl.appendChild(bubble);
+            
+            setTimeout(() => {
+                bubble.classList.add('show-previous');
+            }, 50);
+            
+            setTimeout(() => {
+                bubble.classList.remove('show-previous');
+                setTimeout(() => {
+                    if (bubble.parentNode) {
+                        bubble.parentNode.removeChild(bubble);
+                    }
+                }, 300);
+            }, 3000);
+        }
+        
+        // Update chart with new data
+        function updateChart(newValue) {
+            historyData.push(newValue);
+            if (historyData.length > maxHistoryPoints) {
+                historyData.shift();
+            }
+            
+            if (historyChart) {
+                historyChart.data.datasets[0].data = historyData;
+                historyChart.update();
+            }
+        }
+        
+        // Format numbers with commas
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        
+        // Calculate and update averages
+        function updateAverages(pointsGained, secondsPassed) {
+            if (secondsPassed > 0) {
+                const ratePerSecond = pointsGained / secondsPassed;
+                clicks1sEl.textContent = (Math.round(ratePerSecond * 10) / 10).toFixed(1);
+            }
+        }
+        
+        // Update progress bar and next goal countdown
+        function updateProgress(current) {
+            const currentMillion = Math.floor(current / 1000000);
+            const nextGoal = 1000000 * (currentMillion + 1);
+            const remaining = nextGoal - current;
+            
+            goalOdometer.update(remaining);
+            
+            const progress = (current % 1000000) / 1000000 * 100;
+            progressFillEl.style.width = `${progress}%`;
+            progressPercentEl.textContent = `${Math.round(progress)}%`;
+        }
+        
+        // Update country ranking and competitor info
+        function updateCountryRanking(data) {
+            countryRankings = Object.keys(data).map(code => ({
+                code,
+                clicks: data[code]
+            })).sort((a, b) => b.clicks - a.clicks);
+            
+            czPosition = countryRankings.findIndex(c => c.code === 'CZ');
+            
+            if (czPosition >= 0) {
+                const suffix = getNumberSuffix(czPosition + 1);
+                currentRankEl.textContent = `${czPosition + 1}${suffix}`;
+                
+                if (czPosition > 0) {
+                    const competitor = countryRankings[czPosition - 1];
+                    const clicksNeeded = competitor.clicks - data.CZ + 1;
+                    passOdometer.update(clicksNeeded);
+                    
+                    competitorInfoEl.innerHTML = `
+                        <img src="https://flagcdn.com/24x18/${competitor.code.toLowerCase()}.png" class="small-flag" alt="${competitor.code}">
+                        ${getCountryName(competitor.code)}
+                    `;
+                    
+                    if (clicksNeeded < 100000) {
+                        passContainerEl.style.backgroundColor = 'rgba(39, 174, 96, 0.2)';
+                        passContainerEl.style.border = '1px solid var(--accent)';
+                    } else {
+                        passContainerEl.style.backgroundColor = 'rgba(39, 174, 96, 0.1)';
+                    }
+                } else {
+                    passOdometer.update(0);
+                    competitorInfoEl.textContent = "You're #1!";
+                    passContainerEl.style.backgroundColor = 'rgba(39, 174, 96, 0.3)';
+                }
+            }
+        }
+        
+        // Get country name from country code
+        function getCountryName(code) {
+            const countryNames = {
+                'CZ': 'Czech Republic',
+                'US': 'United States',
+                'GB': 'United Kingdom',
+                'DE': 'Germany',
+                'FR': 'France',
+                'ES': 'Spain',
+                'IT': 'Italy',
+                'PL': 'Poland',
+                'BR': 'Brazil',
+                'CA': 'Canada',
+                'AU': 'Australia',
+                'JP': 'Japan',
+                'KR': 'South Korea',
+                'IN': 'India',
+                'RU': 'Russia',
+                'TR': 'Turkey',
+                'NL': 'Netherlands',
+                'SE': 'Sweden',
+                'FI': 'Finland',
+                'NO': 'Norway',
+                'DK': 'Denmark'
+            };
+            return countryNames[code] || code;
+        }
+        
+        // Get ordinal suffix for numbers
+        function getNumberSuffix(num) {
+            if (num >= 11 && num <= 13) return 'th';
+            switch (num % 10) {
+                case 1: return 'st';
+                case 2: return 'nd';
+                case 3: return 'rd';
+                default: return 'th';
+            }
+        }
+        
+        // Show error message
+        function showError(message) {
+            errorMessageEl.textContent = message;
+            setTimeout(() => {
+                errorMessageEl.textContent = '';
+            }, 5000);
+        }
+        
+        // Fetch data from API
+        async function fetchCzechClicks() {
+            try {
+                resetLoadingBar(); // Reset with precision timing
+                
+                const apiUrl = 'https://leaderboard.popcat.click/';
+                let response;
+                
+                try {
+                    response = await fetch(apiUrl);
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('text/html')) {
+                        throw new Error('Direct fetch returned HTML');
+                    }
+                } catch (directError) {
+                    const proxyUrl = 'https://api.codetabs.com/v1/proxy/?quest=';
+                    response = await fetch(proxyUrl + encodeURIComponent(apiUrl));
+                }
+                
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const data = await response.json();
+                
+                if (!data || !data.CZ) {
+                    throw new Error('Invalid data format from API');
+                }
+                
+                const newCount = data.CZ;
+                const now = new Date();
+                
+                updateCountryRanking(data);
+                
+                if (lastCount > 0) {
+                    const timeDiff = (now - lastUpdateTime) / 1000;
+                    const pointsGained = newCount - lastCount;
+                    updateAverages(pointsGained, timeDiff);
+                    
+                    if (pointsGained > 0) {
+                        createPreviousCountBubble(pointsGained);
+                    }
+                }
+                
+                previousCount = lastCount;
+                lastCount = newCount;
+                lastUpdateTime = now;
+                
+                clickOdometer.update(newCount);
+                updateProgress(newCount);
+                updateChart(newCount);
+                
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                showError(`Error updating data. Retrying...`);
+                resetLoadingBar(); // Ensure loading bar continues even on error
+            }
+        }
+        
+        // Initialize
+        initChart();
+        resetLoadingBar(); // Start the precision loading bar
+        fetchCzechClicks(); // Initial data load
+    </script>
 </body>
 </html>
