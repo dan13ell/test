@@ -567,13 +567,13 @@
             setTimeout(() => {
                 loadingBarEl.style.animation = 'none';
                 loadingBarEl.classList.remove('loading-bar-reset');
-                void loadingBarEl.offsetWidth;
+                void loadingBarEl.offsetWidth; // Trigger reflow
                 loadingBarEl.style.animation = `loadingProgress ${LOADING_DURATION}ms linear forwards`;
                 
                 loadingBarTimeout = setTimeout(() => {
-                    fetchCzechClicks();
-                }, LOADING_DURATION - 50);
-            }, 300);
+                    fetchCzechClicks(); // Schedule next fetch after loading bar completes
+                }, LOADING_DURATION - 50); // Slight delay to ensure animation finishes
+            }, 300); // Duration of the reset animation
         }
 
         // Initialize chart
@@ -627,11 +627,8 @@
 
             const padding = 10; // Padding from the edges of mainStatEl
 
-            // Calculate safe areas for bubble placement
-            // Exclude top section (above clickCountEl) and bottom section (below statLabelRect)
-            // And avoid the width of the main odometer number itself.
-
             // Define areas to avoid (relative to mainStatEl's top-left corner)
+            // Convert absolute rects to positions relative to mainStatEl
             const avoidedAreas = [
                 { // The main odometer number
                     left: clickCountRect.left - mainStatRect.left - padding,
@@ -651,11 +648,15 @@
             let attempts = 0;
             const maxAttempts = 50; // Prevent infinite loop
 
+            // Approximate bubble size for collision detection (can be made dynamic)
+            const bubbleWidth = 80; 
+            const bubbleHeight = 30;
+
             do {
                 // Generate random positions within the bounds of mainStatEl
-                // Subtracting bubble's estimated size (e.g., 80px width, 30px height) and padding
-                randomLeft = Math.random() * (mainStatRect.width - 100 - 2 * padding) + padding;
-                randomTop = Math.random() * (mainStatRect.height - 60 - 2 * padding) + padding;
+                // Ensure bubble fits within mainStatEl with padding
+                randomLeft = Math.random() * (mainStatRect.width - bubbleWidth - 2 * padding) + padding;
+                randomTop = Math.random() * (mainStatRect.height - bubbleHeight - 2 * padding) + padding;
 
                 // Check if the generated position overlaps with any avoided area
                 let overlaps = false;
@@ -663,9 +664,9 @@
                     // Simple AABB collision detection (Axis-Aligned Bounding Box)
                     if (
                         randomLeft < area.right &&
-                        randomLeft + 100 > area.left && // Assume bubble width of 100px
+                        randomLeft + bubbleWidth > area.left && 
                         randomTop < area.bottom &&
-                        randomTop + 60 > area.top    // Assume bubble height of 60px
+                        randomTop + bubbleHeight > area.top    
                     ) {
                         overlaps = true;
                         break;
@@ -674,8 +675,9 @@
                 attempts++;
                 if (attempts > maxAttempts) {
                     // Fallback to a default safe position if too many attempts fail
-                    randomLeft = (mainStatRect.width / 2) - 50;
-                    randomTop = mainStatRect.height * 0.7;
+                    // This position is roughly bottom-right, likely out of the way
+                    randomLeft = mainStatRect.width - bubbleWidth - padding;
+                    randomTop = mainStatRect.height - bubbleHeight - padding;
                     break;
                 }
             } while (overlaps);
@@ -823,65 +825,84 @@
         
         // Fetch data from API
         async function fetchCzechClicks() {
+            resetLoadingBar(); // Always reset the loading bar when starting a fetch
+            
+            const directApiUrl = 'https://leaderboard.popcat.click/';
+            const proxyUrl = 'https://api.codetabs.com/v1/proxy/?quest='; // A free public CORS proxy
+
+            let data;
+
             try {
-                resetLoadingBar(); // Reset with precision timing
+                // Try direct fetch first
+                let response = await fetch(directApiUrl);
                 
-                const apiUrl = 'https://leaderboard.popcat.click/';
-                let response;
-                
-                try {
-                    response = await fetch(apiUrl);
-                    const contentType = response.headers.get('content-type');
-                    if (contentType && contentType.includes('text/html')) {
-                        throw new Error('Direct fetch returned HTML');
-                    }
-                } catch (directError) {
-                    const proxyUrl = 'https://api.codetabs.com/v1/proxy/?quest=';
-                    response = await fetch(proxyUrl + encodeURIComponent(apiUrl));
+                // Check for successful HTTP status and if content type is JSON
+                const contentType = response.headers.get('content-type');
+                if (!response.ok || !contentType || !contentType.includes('application/json')) {
+                    // If not OK or not JSON, assume a problem (CORS or wrong content)
+                    console.warn(`Direct fetch failed or returned non-JSON. Status: ${response.status}, Content-Type: ${contentType}`);
+                    throw new Error('Direct fetch failed or returned non-JSON.');
                 }
-                
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                
-                const data = await response.json();
-                
-                if (!data || !data.CZ) {
-                    throw new Error('Invalid data format from API');
-                }
-                
-                const newCount = data.CZ;
-                const now = new Date();
-                
-                updateCountryRanking(data);
-                
-                if (lastCount > 0) {
-                    const timeDiff = (now - lastUpdateTime) / 1000;
-                    const pointsGained = newCount - lastCount;
-                    updateAverages(pointsGained, timeDiff);
-                    
-                    if (pointsGained > 0) {
-                        createPreviousCountBubble(pointsGained);
-                    }
-                }
-                
-                previousCount = lastCount;
-                lastCount = newCount;
-                lastUpdateTime = now;
-                
-                odometerClickCount.update(newCount); // Update with odometer
-                updateProgress(newCount);
-                updateChart(newCount);
-                
+                data = await response.json();
+
             } catch (error) {
-                console.error('Error fetching data:', error);
-                showError(`Error updating data. Retrying...`);
-                resetLoadingBar(); // Ensure loading bar continues even on error
+                // If direct fetch fails (e.g., CORS, network error, or not JSON), try proxy
+                console.warn('Direct fetch error, trying proxy:', error);
+                try {
+                    let proxyResponse = await fetch(proxyUrl + encodeURIComponent(directApiUrl));
+                    if (!proxyResponse.ok) {
+                        throw new Error(`Proxy HTTP error! status: ${proxyResponse.status}`);
+                    }
+                    // Explicitly check for content type from proxy, as proxy might also return HTML for errors
+                    const proxyContentType = proxyResponse.headers.get('content-type');
+                     if (!proxyContentType || !proxyContentType.includes('application/json')) {
+                        throw new Error('Proxy returned non-JSON content.');
+                    }
+                    data = await proxyResponse.json();
+
+                } catch (proxyError) {
+                    console.error('Error fetching data via proxy:', proxyError);
+                    showError(`Error updating data. Retrying...`);
+                    // Schedule next fetch only if there's a problem, otherwise it's handled by resetLoadingBar
+                    return; // Stop execution here if both fail
+                }
             }
+
+            // If we reached here, 'data' should be valid JSON
+            if (!data || typeof data.CZ === 'undefined') { // Check for CZ specifically
+                showError('Invalid data format received from API. Retrying...');
+                console.error('Received data:', data);
+                return;
+            }
+            
+            const newCount = data.CZ;
+            const now = new Date();
+            
+            updateCountryRanking(data);
+            
+            if (lastCount > 0) {
+                const timeDiff = (now - lastUpdateTime) / 1000;
+                const pointsGained = newCount - lastCount;
+                
+                // Only update averages and create bubble if points were actually gained
+                if (pointsGained > 0) {
+                    updateAverages(pointsGained, timeDiff);
+                    createPreviousCountBubble(pointsGained);
+                }
+            }
+            
+            previousCount = lastCount;
+            lastCount = newCount;
+            lastUpdateTime = now;
+            
+            odometerClickCount.update(newCount); // Update with odometer
+            updateProgress(newCount);
+            updateChart(newCount);
         }
         
         // Initialize
         let lastUpdateTime = null;
         initChart();
-        resetLoadingBar(); // Start the precision loading bar
         fetchCzechClicks(); // Initial data load
     </script>
 </body>
